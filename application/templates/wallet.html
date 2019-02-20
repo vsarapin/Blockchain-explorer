@@ -1,0 +1,745 @@
+{% extends "base.html" %}
+{% block content %}
+{% load staticfiles %}
+<title>{% block title %}Wallet{% endblock %}</title>
+
+<div class="container">
+    <div id="toast"></div>
+    <div id="general_slide_down" class="block-stats-table">
+        <div>
+            <div>generate</div>
+            <div class="details-btn float-right mb-2">
+                <div role="button">
+                    <div id="open_generate">open</div>
+                    <div><img id="img_generate" style="margin-right: 20px" alt=""
+                              src="{% static 'css/img/icons/plus.svg' %}">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div>
+            <div>import</div>
+            <div class="details-btn float-right mb-2">
+                <div role="button">
+                    <div id="open_import">open</div>
+                    <div><img id="img_import" style="margin-right: 20px" alt=""
+                              src="{% static 'css/img/icons/plus.svg' %}">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div>
+            <div>send</div>
+            <div class="details-btn float-right mb-2">
+                <div role="button">
+                    <div id="open_send">open</div>
+                    <div><img id="img_send" style="margin-right: 20px" alt=""
+                              src="{% static 'css/img/icons/plus.svg' %}">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div>
+            <div>addresses</div>
+            <div class="details-btn float-right mb-2">
+                <div role="button">
+                    <div id="open_addresses">open</div>
+                    <div><img id="img_addresses" style="margin-right: 20px" alt=""
+                              src="{% static 'css/img/icons/plus.svg' %}">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div>
+            <div>balance</div>
+            <div class="details-btn float-right mb-2">
+                <div role="button">
+                    <div id="open_balance">open</div>
+                    <div><img id="img_balance" style="margin-right: 20px" alt=""
+                              src="{% static 'css/img/icons/plus.svg' %}">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!--GENERATE FIELDS-->
+    <div id="generate_bar" style="display: none">
+        <div class="search-bar"><input id="generate_private_key" class="form-control search-bar-input" readonly="readonly" type="text" placeholder="Private key" autofocus="" autocomplete="off" aria-label="Search"><div id="copy_priv" class="code-button-btn copy-but"  role="button"><img alt src="{% static 'css/img/icons/copy.png' %}"></div></div><br />
+            <div class="search-bar"><input id="generate_wif" class="form-control search-bar-input" readonly="readonly" type="text" placeholder="WIF" autofocus="" autocomplete="off" aria-label="Search"><div id="copy_wif" class="code-button-btn copy-but"  role="button"><img alt src="{% static 'css/img/icons/copy.png' %}"></div></div><br />
+            <div class="search-bar"><input id="generate_public_key" class="form-control search-bar-input" readonly="readonly" type="text" placeholder="Public key" autofocus="" autocomplete="off" aria-label="Search"><div id="copy_pub" class="code-button-btn copy-but"  role="button"><img alt src="{% static 'css/img/icons/copy.png' %}"></div></div></br />
+                <div class="search-bar"><input id="generate_address" class="form-control search-bar-input" readonly="readonly" type="text" placeholder="Address" autofocus="" autocomplete="off" aria-label="Search"><div id="copy_address" class="code-button-btn copy-but"  role="button"><img alt src="{% static 'css/img/icons/copy.png' %}"></div></div><br />
+        <div id="generate_button" style="display: flex; justify-content: center" class="svg">
+		    <a id="generate_new" class="button" >
+				    <svg>
+                       <rect height="40" width="150" fill="transparent" />
+				    </svg>
+				    <span>Generate</span>
+		    </a>
+        </div>
+    </div>
+
+    <!--IMPORT FIELD-->
+    <div id="import_bar" style="display: none;">
+        <div class="search-bar"><input id="import_key" class="form-control search-bar-input" type="search" placeholder="Insert WIF" autofocus="" autocomplete="off" aria-label="Search"></div>
+        <div id="import_button" style="display: flex; justify-content: center" class="svg">
+            <a id="import_new" class="button" >
+                    <svg>
+                        <rect height="40" width="150" fill="transparent" />
+                    </svg>
+                    <span>Import</span>
+            </a>
+        </div>
+    </div>
+
+    <!--SEND FORM-->
+    <div id="send_bar" style="display: none">
+        <div id="send_from_div" class="search-bar"><input id="send_from" class="form-control search-bar-input" type="text" placeholder="From" autofocus="" autocomplete="off" aria-label="Search"></div><br />
+        <div id="send_to_div" class="search-bar"><input id="send_to" class="form-control search-bar-input" type="text" placeholder="To" autofocus="" autocomplete="off" aria-label="Search"></div><br />
+        <div id="send_amount_div" class="search-bar"><input id="send_amount" class="form-control search-bar-input" type="text" placeholder="Amount" autofocus="" autocomplete="off" aria-label="Search"></div><br />
+        <div id="send_fee_div" class="search-bar"><input id="send_fee" class="form-control search-bar-input" type="text" placeholder="Fee" autofocus="" autocomplete="off" aria-label="Search"></div><br />
+        <div id="send_button" style="display: flex; justify-content: center" class="svg">
+		    <a id="send_new" class="button" >
+				    <svg>
+                       <rect height="40" width="150" fill="transparent" />
+				    </svg>
+				    <span>Send</span>
+		    </a>
+        </div>
+    </div>
+
+    <!--ADDRESSES FIELD-->
+    <div id="address_bar" style="display: none"></div>
+
+    <!--BALANCE FIELD-->
+    <div id="balance_bar" style="display: none">
+        <div class="search-bar"><input id="balance_field" class="form-control search-bar-input" type="text" placeholder="Enter address" autofocus="" autocomplete="off" aria-label="Search"></div><br />
+        <div id="balance_button" style="display: flex; justify-content: center" class="svg">
+		    <a id="balance_new" class="button" >
+				    <svg>
+                       <rect height="40" width="150" fill="transparent" />
+				    </svg>
+				    <span>Check</span>
+		    </a>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+<script>
+    let raw_tx = '';
+    //GET COOKIES FOR DJANGO
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            let cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                let cookie = jQuery.trim(cookies[i]);
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+    let csrftoken = getCookie('csrftoken');
+
+    //TOAST REALIZZZZZATION
+    (function($) {
+
+      $.fn.toast = function(options)  {
+
+        let settings = $.extend({
+          type: 'normal',
+          message:  null
+        }, options);
+
+        let item = $('<div class="notification ' + settings.type + '"><span>' + settings.message + '</span></div>');
+        this.append($(item));
+        $(item).animate({ "right": "12px" }, "fast");
+        setInterval(function() {
+          $(item).animate({ "right": "-400px" }, function() {
+            $(item).remove();
+          });
+        }, 4000);
+      };
+
+      $(document).on('click', '.notification', function() {
+          $(this).fadeOut(400, function(){
+            $(this).remove();
+          });
+      });
+        }(jQuery));
+
+    // GENERATE FIELDS
+    $('#open_generate').click(function () {
+        if ($('#open_generate').text() === 'open') {
+
+            $('#open_import').text("open");
+            $('#img_import').attr('src', "{% static "css/img/icons/plus.svg" %}");
+            $('#import_bar').slideUp('slow');
+            $('#open_send').text("open");
+            $('#img_send').attr('src', "{% static "css/img/icons/plus.svg" %}");
+            $('#send_bar').slideUp('slow');
+            $('#open_addresses').text("open");
+            $('#img_addresses').attr('src', "{% static "css/img/icons/plus.svg" %}");
+            $('#address_bar').slideUp('slow');
+            $('#open_balance').text("open");
+            $('#img_balance').attr('src', "{% static "css/img/icons/plus.svg" %}");
+            $('#balance_bar').slideUp('slow');
+            $('#address_bar').children().remove();
+
+            $('#open_generate').text("close");
+            $('#img_generate').attr('src', "{% static "css/img/icons/minus.svg" %}");
+            $('#generate_bar').slideDown('slow');
+
+        } else {
+            $('#open_generate').text("open");
+            $('#img_generate').attr('src', "{% static "css/img/icons/plus.svg" %}");
+            $('#generate_bar').slideUp('slow');
+        }
+    });
+
+    // IMPORT FIELDS
+    $('#open_import').click(function () {
+        if ($('#open_import').text() === 'open') {
+
+            $('#open_send').text("open");
+            $('#img_send').attr('src', "{% static "css/img/icons/plus.svg" %}");
+            $('#send_bar').slideUp('slow')
+            $('#open_addresses').text("open");
+            $('#img_addresses').attr('src', "{% static "css/img/icons/plus.svg" %}");
+            $('#address_bar').slideUp('slow');
+            $('#open_generate').text("open");
+            $('#img_generate').attr('src', "{% static "css/img/icons/plus.svg" %}");
+            $('#generate_bar').slideUp('slow');
+            $('#address_bar').children().remove();
+            $('#open_balance').text("open");
+            $('#img_balance').attr('src', "{% static "css/img/icons/plus.svg" %}");
+            $('#balance_bar').slideUp('slow');
+
+            $('#open_import').text("close");
+            $('#img_import').attr('src', "{% static "css/img/icons/minus.svg" %}");
+            $('#import_bar').slideDown('slow');
+
+        } else {
+            $('#open_import').text("open");
+            $('#img_import').attr('src', "{% static "css/img/icons/plus.svg" %}");
+            $('#import_bar').slideUp('slow');
+        }
+    });
+
+    // SEND FIELDS
+    $('#open_send').click(function () {
+        if ($('#open_send').text() === 'open') {
+            $.ajax({
+                url: '/chains/block_counter/', dataType: "text",
+                success: function (data, textStatus) {
+                    if (data === "0") {
+                        $('#send_button').css('display', 'none');
+                        $('#send_from_div').css('display', 'none');
+                        $('#send_to_div').css('display', 'none');
+                        $('#send_amount_div').css('display', 'none');
+                        $('#send_fee_div').css('display', 'none');
+                        $('#open_import').text("open");
+                        $('#img_import').attr('src', "{% static "css/img/icons/plus.svg" %}");
+                        $('#import_bar').slideUp('slow');
+                        $('#open_addresses').text("open");
+                        $('#img_addresses').attr('src', "{% static "css/img/icons/plus.svg" %}");
+                        $('#address_bar').slideUp('slow');
+                        $('#open_generate').text("open");
+                        $('#img_generate').attr('src', "{% static "css/img/icons/plus.svg" %}");
+                        $('#generate_bar').slideUp('slow');
+                        $('#address_bar').children().remove();
+                        $('#open_balance').text("open");
+                        $('#img_balance').attr('src', "{% static "css/img/icons/plus.svg" %}");
+                        $('#balance_bar').slideUp('slow');
+                        $('#open_send').text("close");
+                        $('#img_send').attr('src', "{% static "css/img/icons/minus.svg" %}");
+                        $('#genesis_button').remove();
+                        $('#send_bar').append('<div id="genesis_button" style="display: flex; justify-content: center" class="svg"><a id="send_new" class="button"><svg><rect height="40" width="150" fill="transparent" /></svg><span>Generate genesis</span> </a></div>')
+                        $('#send_bar').slideDown('slow');
+                        $('#genesis_button').click(function () {
+                           $.ajax({
+                              url: '/wallet/check_miners_key_exists/', dataType: "text",
+                               success: function (data, textStatus) {
+                                   if (data === '0') {
+                                       $("#toast").toast({
+                                            type: 'error',
+                                            message: 'Generate miner`s key first!'
+                                    });
+                                   }
+                                   else {
+                                       $.ajax({url: '/wallet/generate_genesis_block/', dataType: "text",
+                                           success: function (data, textStatus) {
+                                               if (data === '1') {
+                                                   $("#toast").toast({
+                                                       type: 'success',
+                                                       message: 'Genesis block created!'
+                                                   });
+                                                   $('#genesis_button').css('display', 'none');
+                                                   $('#send_button').css('display', 'flex');
+                                                   $('#send_from_div').css('display', 'block');
+                                                   $('#send_to_div').css('display', 'block');
+                                                   $('#send_amount_div').css('display', 'block');
+                                                   $('#send_fee_div').css('display', 'block');
+
+
+                                               }
+                                           }
+                                       })
+                                   }
+                               }
+                           });
+                        });
+                    }
+                     else {
+                        $('#open_import').text("open");
+                        $('#img_import').attr('src', "{% static "css/img/icons/plus.svg" %}");
+                        $('#import_bar').slideUp('slow');
+                        $('#open_addresses').text("open");
+                        $('#img_addresses').attr('src', "{% static "css/img/icons/plus.svg" %}");
+                        $('#address_bar').slideUp('slow');
+                        $('#open_generate').text("open");
+                        $('#img_generate').attr('src', "{% static "css/img/icons/plus.svg" %}");
+                        $('#generate_bar').slideUp('slow');
+                        $('#address_bar').children().remove();
+                        $('#open_balance').text("open");
+                        $('#img_balance').attr('src', "{% static "css/img/icons/plus.svg" %}");
+                        $('#balance_bar').slideUp('slow');
+
+                        $('#open_send').text("close");
+                        $('#img_send').attr('src', "{% static "css/img/icons/minus.svg" %}");
+                        $('#send_bar').slideDown('slow');
+                        }
+                    }
+            });
+
+        } else {
+            $('#open_send').text("open");
+            $('#img_send').attr('src', "{% static "css/img/icons/plus.svg" %}");
+            $('#send_bar').slideUp('slow');
+        }
+    });
+
+    // ADDRESS FIELDS
+    $('#open_addresses').click(function () {
+        if ($('#open_addresses').text() === 'open') {
+
+            $.ajax({url: '/wallet/get_addresses', dataType : "text",
+                success: function (data, textStatus) {
+                    if (data !== '0') {
+                        data = data.split(',').filter(element => element !== "");
+                        data = data.filter(element => element !== "");
+                        $('#address_bar').children().remove();
+                        data.forEach(function(item, index) {
+                            $('#address_bar').append('<div class="search-bar"><input id=\"address_' + index + '\'" class="form-control search-bar-input" type="search" readonly="readonly" autofocus="" autocomplete="off" aria-label="Search" value=' + item + '><div id=\"copy_' + index + '\" class="code-button-btn copy-but"  role="button"><img alt src="{% static 'css/img/icons/copy.png' %}"></div></div>');
+                        });
+                        let elem = document.getElementById('address_bar').children;
+                        Object.keys(elem).map(function (item) {
+                            elem[item].children[1].addEventListener('click', function () {
+                                $("#toast").toast({
+                                      type: 'success',
+                                      message: 'Copied to clipboard!'
+                                });
+                                elem[item].children[0].select();
+                                document.execCommand("copy");
+                            });
+                        });
+                        $('#address_bar').append('<div id="address_button" style="display:flex; justify-content:center" class="svg"><a id="address_del" class="button" ><svg><rect height="40" width="150" fill="transparent" /></svg><span>Delete</span></a></div>');
+
+                        // DELETE ADDRESSES LISTENER
+                        $('#address_del').click(function () {
+                            $.ajax({url: '/wallet/delete/', dataType: "text",
+                                success: function() {
+                                    $("#toast").toast({
+                                      type: 'success',
+                                      message: 'Deleted!'
+                                    });
+                                    $('#address_bar').children().remove();
+                                    $('#address_bar').append('<div class="search-bar"><input id="address" class="form-control search-bar-input" type="search" readonly="readonly" autofocus="" autocomplete="off" aria-label="Search" value="No addresses yet!"></div>')
+                                },
+                                error: function (jqXHR, exception) {
+                                console.log(jqXHR.responseText);
+                            }
+                            });
+                        });
+                    }
+                    else {
+                         $('#address_bar').append('<div class="search-bar"><input id="address" class="form-control search-bar-input" type="search" readonly="readonly" autofocus="" autocomplete="off" aria-label="Search" value="No addresses yet!"></div>')
+
+                    }
+                },
+                error: function (jqXHR, exception) {
+                console.log(jqXHR.responseText);
+                }
+            });
+
+            $('#open_send').text("open");
+            $('#img_send').attr('src', "{% static "css/img/icons/plus.svg" %}");
+            $('#send_bar').slideUp('slow');
+            $('#open_generate').text("open");
+            $('#img_generate').attr('src', "{% static "css/img/icons/plus.svg" %}");
+            $('#generate_bar').slideUp('slow');
+            $('#open_import').text("open");
+            $('#img_import').attr('src', "{% static "css/img/icons/plus.svg" %}");
+            $('#import_bar').slideUp('slow');
+            $('#open_balance').text("open");
+            $('#img_balance').attr('src', "{% static "css/img/icons/plus.svg" %}");
+            $('#balance_bar').slideUp('slow');
+
+            $('#open_addresses').text("close");
+            $('#img_addresses').attr('src', "{% static "css/img/icons/minus.svg" %}");
+            $('#address_bar').slideDown('slow');
+        } else {
+            $('#open_addresses').text("open");
+            $('#img_addresses').attr('src', "{% static "css/img/icons/plus.svg" %}");
+            $('#address_bar').slideUp('slow');
+            $('#address_bar').children().remove()
+        }
+    });
+
+    // BALANCE FIELDS
+    $('#open_balance').click(function () {
+        if ($('#open_balance').text() === 'open') {
+
+            $('#open_import').text("open");
+            $('#img_import').attr('src', "{% static "css/img/icons/plus.svg" %}");
+            $('#import_bar').slideUp('slow');
+            $('#open_send').text("open");
+            $('#img_send').attr('src', "{% static "css/img/icons/plus.svg" %}");
+            $('#send_bar').slideUp('slow');
+            $('#open_addresses').text("open");
+            $('#img_addresses').attr('src', "{% static "css/img/icons/plus.svg" %}");
+            $('#address_bar').slideUp('slow');
+            $('#address_bar').children().remove();
+            $('#open_generate').text("open");
+            $('#img_generate').attr('src', "{% static "css/img/icons/plus.svg" %}");
+            $('#generate_bar').slideUp('slow');
+
+            $('#open_balance').text("close");
+            $('#img_balance').attr('src', "{% static "css/img/icons/minus.svg" %}");
+            $('#balance_bar').slideDown('slow');
+
+        } else {
+            $('#open_balance').text("open");
+            $('#img_balance').attr('src', "{% static "css/img/icons/plus.svg" %}");
+            $('#balance_bar').slideUp('slow');
+        }
+    });
+
+    // IMPORT LISTENER
+    $('#import_new').click(function () {
+        $.ajax({url: '/wallet/import', data: {'key': $('#import_key').val()}, dataType : "text",
+            success: function (data, textStatus) {
+                if (data === "Wrong WIF!") {
+                    let audio = new Audio("/static/sounds/error.mp3");
+                    audio.volume = 1;
+                    audio.play();
+                    $('#import_key').val("");
+                    $('#import_key').attr("placeholder", "Wrong WIF!");
+                }
+                else if (data === "WIF already exists!") {
+                    let audio = new Audio("/static/sounds/error.mp3");
+                    audio.volume = 1;
+                    audio.play();
+                    $('#import_key').val("");
+                    $('#import_key').attr("placeholder", "WIF already exists!");
+                }
+                else {
+                    $("#toast").toast({
+                        type: 'success',
+                        message: 'Imported!'
+                    });
+                    $('#open_import').text("open");
+                    $('#img_import').attr('src', "{% static "css/img/icons/plus.svg" %}");
+                    $('#import_bar').slideUp('slow');
+                    $('#open_generate').text("close");
+                    $('#img_generate').attr('src', "{% static "css/img/icons/minus.svg" %}");
+                    $('#generate_bar').slideDown('slow');
+                    let array = data.split(',');
+                    let filteredArray = array.filter(element => element !== "");
+                    $('#generate_private_key').val(filteredArray[0]);
+                    $('#generate_wif').val(filteredArray[1]);
+                    $('#generate_public_key').val(filteredArray[2]);
+                    $('#generate_address').val(filteredArray[3]);
+                    $('#copy_priv').click(function () {$('#generate_private_key').select(); document.execCommand("copy");});
+                    $('#copy_wif').click(function () {$('#generate_wif').select(); document.execCommand("copy");});
+                    $('#copy_pub').click(function () {$('#generate_public_key').select(); document.execCommand("copy");});
+                    $('#copy_address').click(function () {$('#generate_address').select(); document.execCommand("copy");});
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+            console.log(errorThrown);
+        }
+        });
+    });
+
+    // GENERATE LISTENER
+    $('#generate_new').click(function () {
+        $.ajax({url: '/wallet/new', dataType : "text",
+            success: function (data, textStatus) {
+                $("#toast").toast({
+                    type: 'success',
+                    message: 'Generated successfully!'
+                });
+                let array = data.split(',');
+                let filteredArray = array.filter(element => element !== "");
+                $('#generate_private_key').val(filteredArray[0]);
+                $('#generate_wif').val(filteredArray[1]);
+                $('#generate_public_key').val(filteredArray[2]);
+                $('#generate_address').val(filteredArray[3]);
+                $('#copy_priv').click(function () {$('#toast').toast({type: 'success', message: 'Private key copied to clipboard'});$('#generate_private_key').select(); document.execCommand("copy");});
+                $('#copy_wif').click(function () {$('#toast').toast({type: 'success', message: 'WIF copied to clipboard'});$('#generate_wif').select(); document.execCommand("copy");});
+                $('#copy_pub').click(function () {$('#toast').toast({type: 'success', message: 'Public key copied to clipboard'});$('#generate_public_key').select(); document.execCommand("copy");});
+                $('#copy_address').click(function () {$('#toast').toast({type: 'success', message: 'Address copied to clipboard'});$('#generate_address').select(); document.execCommand("copy");});
+            },
+            error: function (jqXHR, exception) {
+            console.log(jqXHR.responseText);
+        }
+        });
+    });
+
+    // SEND LISTENER
+    $('#send_new').click(function () {
+        let sendData = 'from=' + $('#send_from').val() + "&to=" + $('#send_to').val() + "&amount=" + Number($('#send_amount').val()) + "&fee=" + Number($('#send_fee').val());
+        $.ajax({url: '/wallet/send/', data: sendData, dataType : "text",
+            success: function (data, textStatus) {
+            if (data === "Not enough coins on __from__ balance!") {
+                $("#toast").toast({
+                    type: 'error',
+                    message: 'Not enough coins on balance!'
+                });
+                let audio = new Audio("/static/sounds/minerals.mp3");
+                audio.volume = 1;
+                audio.play();
+            }
+            else if (data.substr(0, 2) !== '01') {
+                $("#toast").toast({
+                    type: 'error',
+                    message: data
+                });
+            }
+            else {
+                $("#toast").toast({
+                    type: 'success',
+                    message: 'Transaction generated, you may see it in console!'
+                });
+                raw_tx = data;
+                $('#send_bar').slideUp('slow', function () {
+                    $('#send_button').css('display', 'none');
+                    $('#send_from_div').css('display', 'none');
+                    $('#send_to_div').css('display', 'none');
+                    $('#send_amount_div').css('display', 'none');
+                    $('#send_fee_div').css('display', 'none');
+                });
+                    $('#send_bar').slideDown('slow', function () {
+                     $('#send_bar').append('<div id="broadcast" style="display:flex;justify-content:center" class="svg"><a id="send_broadcast" class="button"><svg><rect height="40" width="150" fill="transparent" /></svg><span>Broadcast</span> </a></div>')
+                     let post = JSON.stringify({'raw_tx': raw_tx});
+                        // BROADCAST LISTENER
+                     $('#send_broadcast').click(function () {
+                            $.ajax({type: "POST",
+                                beforeSend: function (request) {
+                                request.setRequestHeader('Content-type', 'application/json; charset=utf-8');
+                                       request.setRequestHeader('X-CSRFToken', csrftoken);
+                                   },
+                                url: '/wallet/broadcast/',
+                                data: post,
+                                success: function (data, textStatus) {
+                                    if (data === "True") {
+                                        $("#toast").toast({
+                                            type: 'success',
+                                            message: 'Broadcasted!'
+                                        });
+                                    }
+                                    $('#broadcast').remove();
+                                    $('#send_from').val("");
+                                    $('#send_to').val("");
+                                    $('#send_amount').val("");
+                                    $('#send_fee').val("");
+                                    $('#send_from_div').css('display', 'flex');
+                                    $('#send_to_div').css('display', 'flex');
+                                    $('#send_amount_div').css('display', 'flex');
+                                    $('#send_fee_div').css('display', 'flex');
+                                    $('#send_button').css('display', 'flex');
+                                    $('#send_bar').slideDown('slow');
+
+                                }})
+                            });
+                    });
+                }
+                console.log(data)
+            },
+            error: function (jqXHR, exception) {
+            console.log(jqXHR.responseText);
+        }
+        });
+    });
+
+
+    // BALANCE LISTENER
+    $('#balance_new').click(function () {
+        let sendData = 'address=' + $('#balance_field').val();
+        $.ajax({url: '/wallet/balance/',data:sendData, dataType: "text",
+            success: function (data, textStatus) {
+                $("#toast").toast({
+                    message: 'This address has ' + data + ' satoshis!'
+                });
+            },
+            error: function (jqXHR, exception) {
+            console.log(jqXHR.responseText);
+        }
+        });
+    });
+
+    //     $("#toast").toast({
+    //      message: 'This address has ' + data + ' coins!'
+    // });
+        //
+        // $("#toast").toast({
+        //   type: 'success',
+        //   message: 'Success message'
+        // });
+        //
+        // $("#toast").toast({
+        //   type: 'error',
+        //   message: 'Error message'
+        // });
+</script>
+<style>
+    #toast {
+  position: fixed;
+  z-index: 999;
+  top: 12px;
+  right: 12px;
+}
+
+.notification {
+  display: block;
+  position: relative;
+  overflow: hidden;
+  margin-top: 10px;
+  margin-right: 10px;
+  padding: 20px;
+  width: 300px;
+  border-radius: 3px;
+  color: white;
+  right: -400px;
+}
+.normal {
+  background: #273140;
+}
+.success {
+  background: #44be75;
+}
+.error {
+  background: #c33c3c;
+}
+
+.copy-but {
+    float: right;
+    cursor: pointer;
+}
+input[type=text] {
+  cursor:pointer;
+}
+input[type=search] {
+  cursor:pointer;
+}
+a {
+    color: #000;
+    text-decoration: none;
+    cursor:pointer;
+}
+
+svg {
+    width: 150px;
+    height: 40px;
+}
+/* THE SVG HOVER EFFECTS */
+.svg .button {
+		text-decoration: none;
+		color: #fff;
+		position: relative;
+		display: inline-block;
+		width: 150px;
+		height: 40px;
+		margin: 20px;
+		overflow: hidden;
+}
+
+.svg .button:nth-child(3) {
+		overflow: visible;
+		position: relative;
+		top: -20px;
+}
+
+.svg .button rect {
+		position: absolute;
+		top: 0;
+		left: 0;
+		stroke-width: 4px;
+		stroke-dashoffset: 400px;
+		stroke: #F5BD41;
+}
+
+.svg .button span {
+		color: #F5BD41;
+		width: 150px;
+		height: 40px;
+		display: inline-block;
+		text-align: center;
+		position: absolute;
+		left: 0;
+		top: 0;
+		line-height: 40px;
+		transition: all .2s linear;
+}
+
+.svg .button span:hover {
+		color: #fff;
+		background: #F5BD41;
+		transition: all 1s cubic-bezier(1.25s 0, 1.15, 1, 1);
+		transition-delay: .5s;
+}
+
+.svg .button:nth-child(1):hover rect {
+		animation: draw1 .75s linear forwards;
+}
+
+.svg .button:nth-child(2):hover rect {
+		animation: draw2 .75s linear forwards;
+}
+
+.svg .button:nth-child(3) span {
+		border: 1px solid #F5BD41;
+		transform: scale(1);
+		width: 125px;
+		height: 35px;
+		line-height: 37px;
+}
+
+.svg .button:nth-child(3):hover span {
+		animation: draw3 .75s linear forwards;
+}
+
+@keyframes draw1 {
+		0% {
+				stroke-dasharray: 300;
+				stroke-dashoffset: 700;
+				stroke-width: 4px;
+		}
+		75% {
+				stroke-dasharray: 900;
+				stroke-width: 1px;
+		}
+		100% {
+				stroke-dasharray: 900;
+				stroke-width: 1px;
+		}
+}
+</style>
+{% endblock %}

@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+{% block content %}
+{% load staticfiles %}
+<title>
+    {% block title %}Home{% endblock %}
+</title>
+<div class="title-bar-container">
+    <div class="title-bar-recent-blocks"><h1>Recent Blocks</h1></div>
+</div>
+<div class="container">
+    <div id="table" class="blocks-table">
+        <div class="blocks-table-row header">
+            <div class="blocks-table-cell">Height</div>
+            <div class="blocks-table-cell">Timestamp</div>
+            <div class="blocks-table-cell">Version</div>
+            <div class="blocks-table-cell">Transactions</div>
+        </div>
+
+    </div>
+</div>
+</div>
+</div>
+</div>
+<footer class="footer">
+    <div class="container">
+        <div class="footer-logo"></div>
+        <div class="footer_container_content">
+            <div class="footer_container_content_row">
+                <div class="footer_container_content_row_social-media_container"><a
+                        class="footer_container_content_row_social-media_link"
+                        href="https://www.facebook.com/vsarapin/" target="_blank"><img
+                        class="footer_container_content_row_social-media_item" alt=""
+                        src="{% static 'f1b_blue.png' %}"></a><a
+                        class="footer_container_content_row_social-media_link"
+                        href="https://github.com/vsarapin" target="_blank"><img
+                        class="footer_container_content_row_social-media_item" alt=""
+                        src="{% static 'github_blue.png' %}"></a></div>
+                <div class="footer_container_content_copyright">© 2019 Vitalii Sarapin. All rights reserved.</div>
+            </div>
+        </div>
+    </div>
+</footer>
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+<script>
+    $.ajax({
+        url: '/show_blocks', dataType: "text",
+        success: function (data, textStatus) {
+            data = JSON.parse(data);
+            if (data != 0 ) {
+                data.forEach(function (value, index) {
+                    if (index < 5) {
+                        $('#table').append('<div id="' + index + '" class="blocks-table-link-row lazy"><a class="blocks-table-row block-data" href="/block/' + (index + 1) + '"> <div class="blocks-table-cell highlighted-text" data-label="Height">' + value[0] + '</div> <div class="blocks-table-cell" data-label="Timestamp">' + value[1] + '</div> <div class="blocks-table-cell" data-label="Version">' + value[2] + '</div> <div class="blocks-table-cell" data-label="Transactions">' + value[3] + '</div> </a> </div>');
+                    } else {
+                        $('#table').append('<div id="' + index + '" style="display:none" class="blocks-table-link-row lazy"><a class="blocks-table-row block-data" href="/block/' + (index + 1) + '"> <div class="blocks-table-cell highlighted-text" data-label="Height">' + value[0] + '</div> <div class="blocks-table-cell" data-label="Timestamp">' + value[1] + '</div> <div class="blocks-table-cell" data-label="Version">' + value[2] + '</div> <div class="blocks-table-cell" data-label="Transactions">' + value[3] + '</div> </a> </div>');
+                    }
+                })
+            }
+
+        }
+    });
+    $(document).ready(function () {
+        $(this).scrollTop(0);
+    });
+    $(window).scroll(function () {
+        if ($(window).scrollTop() === $(document).height() - $(window).height()) {
+            let first_hidden_elem = Number($('.blocks-table-link-row:hidden').attr('id'));
+            let index = 0;
+            while (index < 5) {
+                if ($('#' + first_hidden_elem)) {
+                    $('#' + first_hidden_elem).css('display', 'block').addClass('opacity');
+                    // $('#' + first_hidden_elem).addClass('opacity');
+                    first_hidden_elem++;
+                    index++;
+                }
+            }
+        }
+    });
+</script>
+<style>
+.opacity {
+    -webkit-animation: fadeInFromNone 4s ease-out;
+    -moz-animation: fadeInFromNone 4s ease-out;
+    -o-animation: fadeInFromNone 4s ease-out;
+    animation: fadeInFromNone 4s ease-out;
+}
+@-webkit-keyframes fadeInFromNone {
+    0% {
+        display: none;
+        opacity: 0;
+    }
+
+    1% {
+        display: block;
+        opacity: 0;
+    }
+
+    100% {
+        display: block;
+        opacity: 1;
+    }
+}
+
+
+</style>
+{% endblock %}

@@ -1,0 +1,538 @@
+{% extends "base.html" %}
+{% block content %}
+{% load staticfiles %}
+<title>{% block title %}Mine{% endblock %}</title>
+
+<div class="container">
+    <div id="toast"></div>
+    <div id="general_slide_down" class="block-stats-table">
+        <div>
+            <div>generate</div>
+            <div class="details-btn float-right mb-2">
+                <div role="button">
+                    <div id="open_generate">open</div>
+                    <div><img id="img_generate" style="margin-right: 20px" alt=""
+                              src="{% static 'css/img/icons/plus.svg' %}">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div>
+            <div>import</div>
+            <div class="details-btn float-right mb-2">
+                <div role="button">
+                    <div id="open_import">open</div>
+                    <div><img id="img_import" style="margin-right: 20px" alt=""
+                              src="{% static 'css/img/icons/plus.svg' %}">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div>
+            <div>mine</div>
+            <div class="details-btn float-right mb-2">
+                <div role="button">
+                    <div id="open_mine">open</div>
+                    <div><img id="img_mine" style="margin-right: 20px" alt=""
+                              src="{% static 'css/img/icons/plus.svg' %}">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div>
+            <div>address</div>
+            <div class="details-btn float-right mb-2">
+                <div role="button">
+                    <div id="open_addresses">open</div>
+                    <div><img id="img_addresses" style="margin-right: 20px" alt=""
+                              src="{% static 'css/img/icons/plus.svg' %}">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!--GENERATE FIELDS-->
+    <div id="generate_bar" style="display: none">
+        <div class="search-bar"><input id="generate_private_key" class="form-control search-bar-input" readonly="readonly" type="text" placeholder="Private key" autofocus="" autocomplete="off" aria-label="Search"><div id="copy_priv" class="code-button-btn copy-but"  role="button"><img alt src="{% static 'css/img/icons/copy.png' %}"></div></div><br />
+            <div class="search-bar"><input id="generate_wif" class="form-control search-bar-input" readonly="readonly" type="text" placeholder="WIF" autofocus="" autocomplete="off" aria-label="Search"><div id="copy_wif" class="code-button-btn copy-but"  role="button"><img alt src="{% static 'css/img/icons/copy.png' %}"></div></div><br />
+            <div class="search-bar"><input id="generate_public_key" class="form-control search-bar-input" readonly="readonly" type="text" placeholder="Public key" autofocus="" autocomplete="off" aria-label="Search"><div id="copy_pub" class="code-button-btn copy-but"  role="button"><img alt src="{% static 'css/img/icons/copy.png' %}"></div></div></br />
+                <div class="search-bar"><input id="generate_address" class="form-control search-bar-input" readonly="readonly" type="text" placeholder="Address" autofocus="" autocomplete="off" aria-label="Search"><div id="copy_address" class="code-button-btn copy-but"  role="button"><img alt src="{% static 'css/img/icons/copy.png' %}"></div></div><br />
+        <div id="generate_button" style="display: flex; justify-content: center" class="svg">
+		    <a id="generate_new" class="button" >
+				    <svg>
+                       <rect height="40" width="150" fill="transparent" />
+				    </svg>
+				    <span>Generate</span>
+		    </a>
+        </div>
+    </div>
+
+    <!--IMPORT FIELD-->
+    <div id="import_bar" style="display: none;">
+        <div class="search-bar"><input id="import_key" class="form-control search-bar-input" type="search" placeholder="Insert WIF" autofocus="" autocomplete="off" aria-label="Search"></div>
+        <div id="import_button" style="display: flex; justify-content: center" class="svg">
+            <a id="import_new" class="button" >
+                    <svg>
+                        <rect height="40" width="150" fill="transparent" />
+                    </svg>
+                    <span>Import</span>
+            </a>
+        </div>
+    </div>
+
+    <!--MINE FIELD-->
+    <div id="mine_bar" style="display: none">
+        <div id="mine_button" style="display: flex; justify-content: center" class="svg">
+		    <a id="mine_new" class="button" >
+				    <svg>
+                       <rect height="40" width="150" fill="transparent" />
+				    </svg>
+				    <span>Mine</span>
+		    </a>
+        </div>
+    </div>
+
+    <!--ADDRESSES FIELD-->
+    <div id="address_bar" style="display: none"></div>
+
+    <!--BALANCE FIELD-->
+    <div id="balance_bar" style="display: none">
+        <div class="search-bar"><input id="balance_field" class="form-control search-bar-input" type="text" placeholder="Enter address" autofocus="" autocomplete="off" aria-label="Search"></div><br />
+        <div id="balance_button" style="display: flex; justify-content: center" class="svg">
+		    <a id="balance_new" class="button" >
+				    <svg>
+                       <rect height="40" width="150" fill="transparent" />
+				    </svg>
+				    <span>Check</span>
+		    </a>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+<script>
+    //TOAST REALIZZZZZATION
+    (function($) {
+
+      $.fn.toast = function(options)  {
+
+        let settings = $.extend({
+          type: 'normal',
+          message:  null
+        }, options);
+
+        let item = $('<div class="notification ' + settings.type + '"><span>' + settings.message + '</span></div>');
+        this.append($(item));
+        $(item).animate({ "right": "12px" }, "fast");
+        setInterval(function() {
+          $(item).animate({ "right": "-400px" }, function() {
+            $(item).remove();
+          });
+        }, 4000);
+      };
+
+      $(document).on('click', '.notification', function() {
+          $(this).fadeOut(400, function(){
+            $(this).remove();
+          });
+      });
+        }(jQuery));
+
+    // GENERATE FIELDS
+    $('#open_generate').click(function () {
+        if ($('#open_generate').text() === 'open') {
+
+            $('#open_import').text("open");
+            $('#img_import').attr('src', "{% static "css/img/icons/plus.svg" %}");
+            $('#import_bar').slideUp('slow');
+            $('#open_send').text("open");
+            $('#img_send').attr('src', "{% static "css/img/icons/plus.svg" %}");
+            $('#send_bar').slideUp('slow');
+            $('#open_addresses').text("open");
+            $('#img_addresses').attr('src', "{% static "css/img/icons/plus.svg" %}");
+            $('#address_bar').slideUp('slow');
+            $('#open_balance').text("open");
+            $('#img_balance').attr('src', "{% static "css/img/icons/plus.svg" %}");
+            $('#balance_bar').slideUp('slow');
+            $('#open_mine').text("open");
+            $('#img_mine').attr('src', "{% static "css/img/icons/plus.svg" %}");
+            $('#mine_bar').slideUp('slow');
+            $('#address_bar').children().remove();
+
+            $('#open_generate').text("close");
+            $('#img_generate').attr('src', "{% static "css/img/icons/minus.svg" %}");
+            $('#generate_bar').slideDown('slow');
+
+        } else {
+            $('#open_generate').text("open");
+            $('#img_generate').attr('src', "{% static "css/img/icons/plus.svg" %}");
+            $('#generate_bar').slideUp('slow');
+        }
+    });
+
+    // IMPORT FIELDS
+    $('#open_import').click(function () {
+        if ($('#open_import').text() === 'open') {
+
+            $('#open_send').text("open");
+            $('#img_send').attr('src', "{% static "css/img/icons/plus.svg" %}");
+            $('#send_bar').slideUp('slow')
+            $('#open_addresses').text("open");
+            $('#img_addresses').attr('src', "{% static "css/img/icons/plus.svg" %}");
+            $('#address_bar').slideUp('slow');
+            $('#open_generate').text("open");
+            $('#img_generate').attr('src', "{% static "css/img/icons/plus.svg" %}");
+            $('#generate_bar').slideUp('slow');
+            $('#address_bar').children().remove();
+            $('#open_balance').text("open");
+            $('#img_balance').attr('src', "{% static "css/img/icons/plus.svg" %}");
+            $('#balance_bar').slideUp('slow');
+            $('#open_mine').text("open");
+            $('#img_mine').attr('src', "{% static "css/img/icons/plus.svg" %}");
+            $('#mine_bar').slideUp('slow');
+
+            $('#open_import').text("close");
+            $('#img_import').attr('src', "{% static "css/img/icons/minus.svg" %}");
+            $('#import_bar').slideDown('slow');
+
+        } else {
+            $('#open_import').text("open");
+            $('#img_import').attr('src', "{% static "css/img/icons/plus.svg" %}");
+            $('#import_bar').slideUp('slow');
+        }
+    });
+
+    // MINE FIELDS
+    $('#open_mine').click(function () {
+        if ($('#open_mine').text() === 'open') {
+
+            $('#open_send').text("open");
+            $('#img_send').attr('src', "{% static "css/img/icons/plus.svg" %}");
+            $('#send_bar').slideUp('slow')
+            $('#open_addresses').text("open");
+            $('#img_addresses').attr('src', "{% static "css/img/icons/plus.svg" %}");
+            $('#address_bar').slideUp('slow');
+            $('#open_generate').text("open");
+            $('#img_generate').attr('src', "{% static "css/img/icons/plus.svg" %}");
+            $('#generate_bar').slideUp('slow');
+            $('#address_bar').children().remove();
+            $('#open_balance').text("open");
+            $('#img_balance').attr('src', "{% static "css/img/icons/plus.svg" %}");
+            $('#balance_bar').slideUp('slow');
+            $('#open_import').text("open");
+            $('#img_import').attr('src', "{% static "css/img/icons/plus.svg" %}");
+            $('#import_bar').slideUp('slow');
+
+            $('#open_mine').text("close");
+            $('#img_mine').attr('src', "{% static "css/img/icons/minus.svg" %}");
+            $('#mine_bar').slideDown('slow');
+
+        } else {
+            $('#open_mine').text("open");
+            $('#img_mine').attr('src', "{% static "css/img/icons/plus.svg" %}");
+            $('#mine_bar').slideUp('slow');
+        }
+    });
+    // ADDRESS FIELDS
+    $('#open_addresses').click(function () {
+        if ($('#open_addresses').text() === 'open') {
+
+            $.ajax({url: '/miner/get_addresses', dataType : "text",
+                success: function (data, textStatus) {
+                    if (data !== '') {
+                        $('#address_bar').children().remove();
+                        $('#address_bar').append('<div class="search-bar"><input id="address_import" class="form-control search-bar-input" type="search" readonly="readonly" autofocus="" autocomplete="off" aria-label="Search" value=' + data + '><div id="copy_import" class="code-button-btn copy-but"  role="button"><img alt src="{% static 'css/img/icons/copy.png' %}"></div></div>');
+                        let elem = document.getElementById('address_bar').children;
+                        Object.keys(elem).map(function (item) {
+                            elem[item].children[1].addEventListener('click', function () {
+                                $("#toast").toast({
+                                      type: 'success',
+                                      message: 'Copied to clipboard!'
+                                });
+                                elem[item].children[0].select();
+                                document.execCommand("copy");
+                            });
+                        });
+                    }
+                    else {
+                         $('#address_bar').append('<div class="search-bar"><input id="address" class="form-control search-bar-input" type="search" readonly="readonly" autofocus="" autocomplete="off" aria-label="Search" value="No address yet!"></div>')
+
+                    }
+                },
+                error: function (jqXHR, exception) {
+                console.log(jqXHR.responseText);
+                }
+            });
+
+            $('#open_send').text("open");
+            $('#img_send').attr('src', "{% static "css/img/icons/plus.svg" %}");
+            $('#send_bar').slideUp('slow');
+            $('#open_generate').text("open");
+            $('#img_generate').attr('src', "{% static "css/img/icons/plus.svg" %}");
+            $('#generate_bar').slideUp('slow');
+            $('#open_import').text("open");
+            $('#img_import').attr('src', "{% static "css/img/icons/plus.svg" %}");
+            $('#import_bar').slideUp('slow');
+            $('#open_balance').text("open");
+            $('#img_balance').attr('src', "{% static "css/img/icons/plus.svg" %}");
+            $('#balance_bar').slideUp('slow');
+            $('#open_mine').text("open");
+            $('#img_mine').attr('src', "{% static "css/img/icons/plus.svg" %}");
+            $('#mine_bar').slideUp('slow');
+
+            $('#open_addresses').text("close");
+            $('#img_addresses').attr('src', "{% static "css/img/icons/minus.svg" %}");
+            $('#address_bar').slideDown('slow');
+        } else {
+            $('#open_addresses').text("open");
+            $('#img_addresses').attr('src', "{% static "css/img/icons/plus.svg" %}");
+            $('#address_bar').slideUp('slow');
+            $('#address_bar').children().remove()
+        }
+    });
+
+
+    // IMPORT LISTENER
+    $('#import_new').click(function () {
+        $.ajax({url: '/miner/import', data: {'key': $('#import_key').val()}, dataType : "text",
+            success: function (data, textStatus) {
+                if (data === "Wrong WIF!") {
+                    let audio = new Audio("/static/sounds/error.mp3");
+                    audio.volume = 1;
+                    audio.play();
+                    $('#import_key').val("");
+                    $('#import_key').attr("placeholder", "Wrong WIF!");
+                }
+                else if (data === "WIF already exists!") {
+                    let audio = new Audio("/static/sounds/error.mp3");
+                    audio.volume = 1;
+                    audio.play();
+                    $('#import_key').val("");
+                    $('#import_key').attr("placeholder", "WIF already exists!");
+                }
+                else {
+                    $("#toast").toast({
+                        type: 'success',
+                        message: 'Imported!'
+                    });
+                    $('#open_import').text("open");
+                    $('#img_import').attr('src', "{% static "css/img/icons/plus.svg" %}");
+                    $('#import_bar').slideUp('slow');
+                    $('#open_generate').text("close");
+                    $('#img_generate').attr('src', "{% static "css/img/icons/minus.svg" %}");
+                    $('#generate_bar').slideDown('slow');
+                    let array = data.split(',');
+                    let filteredArray = array.filter(element => element !== "");
+                    $('#generate_private_key').val(filteredArray[0]);
+                    $('#generate_wif').val(filteredArray[1]);
+                    $('#generate_public_key').val(filteredArray[2]);
+                    $('#generate_address').val(filteredArray[3]);
+                    $('#copy_priv').click(function () {$('#toast').toast({type: 'success', message: 'Private key copied to clipboard'});$('#generate_private_key').select(); document.execCommand("copy");});
+                    $('#copy_wif').click(function () {$('#toast').toast({type: 'success', message: 'WIF copied to clipboard'});$('#generate_wif').select(); document.execCommand("copy");});
+                    $('#copy_pub').click(function () {$('#toast').toast({type: 'success', message: 'Public key copied to clipboard'});$('#generate_public_key').select(); document.execCommand("copy");});
+                    $('#copy_address').click(function () {$('#toast').toast({type: 'success', message: 'Address copied to clipboard'});$('#generate_address').select(); document.execCommand("copy");});
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+            console.log(errorThrown);
+        }
+        });
+    });
+
+    // GENERATE LISTENER
+    $('#generate_new').click(function () {
+        $.ajax({url: '/miner/new', dataType : "text",
+            success: function (data, textStatus) {
+                $("#toast").toast({
+                    type: 'success',
+                    message: 'Generated successfully!'
+                });
+                let array = data.split(',');
+                let filteredArray = array.filter(element => element !== "");
+                $('#generate_private_key').val(filteredArray[0]);
+                $('#generate_wif').val(filteredArray[1]);
+                $('#generate_public_key').val(filteredArray[2]);
+                $('#generate_address').val(filteredArray[3]);
+                $('#copy_priv').click(function () {$('#toast').toast({type: 'success', message: 'Private key copied to clipboard'});$('#generate_private_key').select(); document.execCommand("copy");});
+                $('#copy_wif').click(function () {$('#toast').toast({type: 'success', message: 'WIF copied to clipboard'});$('#generate_wif').select(); document.execCommand("copy");});
+                $('#copy_pub').click(function () {$('#toast').toast({type: 'success', message: 'Public key copied to clipboard'});$('#generate_public_key').select(); document.execCommand("copy");});
+                $('#copy_address').click(function () {$('#toast').toast({type: 'success', message: 'Address copied to clipboard'});$('#generate_address').select(); document.execCommand("copy");});
+            },
+            error: function (jqXHR, exception) {
+            console.log(jqXHR.responseText);
+        }
+        });
+    });
+
+    // MINE LISTENER
+    $('#mine_new').click(function () {
+        $.ajax({
+            url: '/miner/mine_pendings/', dataType: "text",
+            success: function (data, textStatus) {
+                console.log(data)
+                if (data === "Need more transactions!") {
+                    $("#toast").toast({
+                        type: 'error',
+                        message: data
+                    });
+                }
+                else {
+                   $("#toast").toast({
+                        type: 'success',
+                        message: "Mined!"
+                    });
+                }
+            }
+        });
+    });
+
+    //     $("#toast").toast({
+    //      message: 'This address has ' + data + ' coins!'
+    // });
+        //
+        // $("#toast").toast({
+        //   type: 'success',
+        //   message: 'Success message'
+        // });
+        //
+        // $("#toast").toast({
+        //   type: 'error',
+        //   message: 'Error message'
+        // });
+</script>
+<style>
+    #toast {
+  position: fixed;
+  z-index: 999;
+  top: 12px;
+  right: 12px;
+}
+
+.notification {
+  display: block;
+  position: relative;
+  overflow: hidden;
+  margin-top: 10px;
+  margin-right: 10px;
+  padding: 20px;
+  width: 300px;
+  border-radius: 3px;
+  color: white;
+  right: -400px;
+}
+.normal {
+  background: #273140;
+}
+.success {
+  background: #44be75;
+}
+.error {
+  background: #c33c3c;
+}
+
+.copy-but {
+    float: right;
+    cursor: pointer;
+}
+input[type=text] {
+  cursor:pointer;
+}
+input[type=search] {
+  cursor:pointer;
+}
+a {
+    color: #000;
+    text-decoration: none;
+    cursor:pointer;
+}
+
+svg {
+    width: 150px;
+    height: 40px;
+}
+/* THE SVG HOVER EFFECTS */
+.svg .button {
+		text-decoration: none;
+		color: #fff;
+		position: relative;
+		display: inline-block;
+		width: 150px;
+		height: 40px;
+		margin: 20px;
+		overflow: hidden;
+}
+
+.svg .button:nth-child(3) {
+		overflow: visible;
+		position: relative;
+		top: -20px;
+}
+
+.svg .button rect {
+		position: absolute;
+		top: 0;
+		left: 0;
+		stroke-width: 4px;
+		stroke-dashoffset: 400px;
+		stroke: #F5BD41;
+}
+
+.svg .button span {
+		color: #F5BD41;
+		width: 150px;
+		height: 40px;
+		display: inline-block;
+		text-align: center;
+		position: absolute;
+		left: 0;
+		top: 0;
+		line-height: 40px;
+		transition: all .2s linear;
+}
+
+.svg .button span:hover {
+		color: #fff;
+		background: #F5BD41;
+		transition: all 1s cubic-bezier(1.25s 0, 1.15, 1, 1);
+		transition-delay: .5s;
+}
+
+.svg .button:nth-child(1):hover rect {
+		animation: draw1 .75s linear forwards;
+}
+
+.svg .button:nth-child(2):hover rect {
+		animation: draw2 .75s linear forwards;
+}
+
+.svg .button:nth-child(3) span {
+		border: 1px solid #F5BD41;
+		transform: scale(1);
+		width: 125px;
+		height: 35px;
+		line-height: 37px;
+}
+
+.svg .button:nth-child(3):hover span {
+		animation: draw3 .75s linear forwards;
+}
+
+@keyframes draw1 {
+		0% {
+				stroke-dasharray: 300;
+				stroke-dashoffset: 700;
+				stroke-width: 4px;
+		}
+		75% {
+				stroke-dasharray: 900;
+				stroke-width: 1px;
+		}
+		100% {
+				stroke-dasharray: 900;
+				stroke-width: 1px;
+		}
+}
+</style>
+{% endblock %}
