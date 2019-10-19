@@ -1,5 +1,4 @@
 from django.urls import path, include
-
 from django.contrib import admin
 
 admin.autodiscover()
@@ -17,6 +16,11 @@ from django.conf.urls.static import static
 # Learn more here: https://docs.djangoproject.com/en/2.1/topics/http/urls/
 
 urlpatterns = [
+    path('accounts/', include('django.contrib.auth.urls')),
+    path('register/', application.views.register, name="register"),
+    path('logout/', application.views.logout, name="logout"),
+    path('admin/', admin.site.urls),
+
     path("", application.views.index, name="index"),
     path("show_blocks/", application.views.return_blocks, name="return_blocks"),
     path("block/<int:height>", application.views.block_info, name="block_info"),
@@ -36,6 +40,7 @@ urlpatterns = [
     path("wallet/balance/", application.views.count_balance, name="count_balance"),
     path("wallet/send/", application.views.send, name="send"),
     path("wallet/broadcast/", application.views.broadcast, name="broadcast"),
+    path("wallet/info/<wallet_address>", application.views.address_info, name="address_info"),
 
     path("mine/", application.views.mine, name="mine"),
     path("miner/new", application.views.miner_generate, name="miner_generate"),

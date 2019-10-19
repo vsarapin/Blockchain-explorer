@@ -6,6 +6,7 @@ class Generated(models.Model):
     wif = models.CharField(max_length=255)
     public_key = models.CharField(max_length=255)
     address = models.CharField(max_length=255)
+    user_id = models.IntegerField()
 
 class Miner(models.Model):
     private_key = models.CharField(max_length=255)

@@ -441,6 +441,10 @@
                     audio.play();
                     $('#import_key').val("");
                     $('#import_key').attr("placeholder", "Wrong WIF!");
+                    $("#toast").toast({
+                        type: 'error',
+                        message: 'Wrong WIF!'
+                    });
                 }
                 else if (data === "WIF already exists!") {
                     let audio = new Audio("/static/sounds/error.mp3");
@@ -448,6 +452,10 @@
                     audio.play();
                     $('#import_key').val("");
                     $('#import_key').attr("placeholder", "WIF already exists!");
+                    $("#toast").toast({
+                        type: 'error',
+                        message: 'WIF already exists!'
+                    });
                 }
                 else {
                     $("#toast").toast({

@@ -69,6 +69,7 @@ TEMPLATES = [
     }
 ]
 
+LOGIN_REDIRECT_URL = "/"
 WSGI_APPLICATION = "options.wsgi.application"
 
 # Database

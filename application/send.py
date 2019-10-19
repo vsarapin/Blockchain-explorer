@@ -1,17 +1,18 @@
 from .balance import Balance
 from .validator import Validator
 from .transaction import Transaction
-from .models import Generated
+from .models import Generated, Miner
 from django.db import connection
 import json
 
 
 class Send:
-    def __init__(self, from_value, to_value, amount_value, fee_value):
+    def __init__(self, from_value, to_value, amount_value, fee_value, user_id):
         self.from_value = from_value
         self.to_value = to_value
         self.amount_value = amount_value
         self.fee_value = fee_value
+        self.user_id = user_id
 
     def check_income_data(self):
         condition = 0
@@ -36,36 +37,40 @@ class Send:
 
                 # Check that public key corresponds to sender`s address
                 if self.check_sender_public_key(self.from_value):
-                    # Check that there is enough coins on balance to send
-                    check_balance = self.check_sender_balance()
-                    if check_balance == True:
+                    # Check if this address corresponds to sender account
+                    if self.check_senders_address_permission():
+                        # Check that there is enough coins on balance to send
+                        check_balance = self.check_sender_balance()
+                        if check_balance == True:
 
-                        # Coins in satoshis
-                        try:
-                            self.amount_value = int(self.amount_value * 100000000)
-                        except ValueError:
-                            return 'Enter valid amount!'
-                        try:
-                            self.fee_value = int(self.fee_value * 100000000)
-                        except ValueError:
-                            return 'Enter valid fee!'
+                            # Coins in satoshis
+                            try:
+                                self.amount_value = int(self.amount_value * 100000000)
+                            except ValueError:
+                                return 'Enter valid amount!'
+                            try:
+                                self.fee_value = int(self.fee_value * 100000000)
+                            except ValueError:
+                                return 'Enter valid fee!'
 
-                        # Get neccessary input parameters from utxo to form raw transaction
-                        # input_counter = self.tx_input_info()
-                        input_counter, input_prev_hashes, vout, output_counter, tx_amount = self.tx_input_info()
-                        # From transaction
-                        transaction = Transaction(self.from_value, self.to_value, self.amount_value, self.fee_value, input_prev_hashes)
-                        transaction.input_counter = input_counter
-                        transaction.input_prev_hashes = input_prev_hashes
-                        transaction.vout = vout
-                        transaction.output_counter = output_counter
-                        transaction.tx_amount = tx_amount
+                            # Get neccessary input parameters from utxo to form raw transaction
+                            # input_counter = self.tx_input_info()
+                            input_counter, input_prev_hashes, vout, output_counter, tx_amount = self.tx_input_info()
+                            # From transaction
+                            transaction = Transaction(self.from_value, self.to_value, self.amount_value, self.fee_value, input_prev_hashes)
+                            transaction.input_counter = input_counter
+                            transaction.input_prev_hashes = input_prev_hashes
+                            transaction.vout = vout
+                            transaction.output_counter = output_counter
+                            transaction.tx_amount = tx_amount
 
-                        real_tx = transaction.create_transaction()
-                        return real_tx
+                            real_tx = transaction.create_transaction()
+                            return real_tx
 
+                        else:
+                            return check_balance
                     else:
-                        return check_balance
+                        return '__from__ address not in your wallet!'
                 else:
                     return '__from__ address not in your wallet!'
             else:
@@ -92,6 +97,13 @@ class Send:
                 return True
         return False
 
+    def check_senders_address_permission(self):
+        check_generated_addresses = Generated.objects.filter(address=self.from_value, user_id=self.user_id).count()
+        check_miner_addresses = Miner.objects.filter(address=self.from_value).count()
+        if check_generated_addresses or check_miner_addresses:
+            return True
+        return False
+
     def check_sender_balance(self):
         if self.amount_value <= 0:
             return 'Amount can`t be 0 or less!'
@@ -100,7 +112,7 @@ class Send:
 
         balance = Balance()
         current_balance = balance.calculate_balance(self.from_value)
-        if current_balance < self.amount_value + self.fee_value:
+        if current_balance < self.amount_value * 100000000 + self.fee_value * 100000000:
             return 'Not enough coins on __from__ balance!'
         else:
             return True

@@ -73,7 +73,7 @@ class IndexBlocks:
                     {'type': 'P2PKH'},
                     {'scriptpubkey_hex': output.scriptpubkey_hex},
                     {'send_to': output.address_to},
-                    {'value': round(int(output.value) / 100000000)},
+                    {'value': float(output.value) / 100000000},
                     {'total_amount': amount},
 
                 ])

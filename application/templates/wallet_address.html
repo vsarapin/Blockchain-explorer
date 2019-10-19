@@ -1,0 +1,95 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="shortcut icon" type="image/png" href="https://blockstream.info/img/favicon.png">
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <title>
+        {% block title %}Address info{% endblock %}
+    </title>
+</head>
+<body lang="en" dir="ltr" class="theme-dark">
+<div id="explorer">
+    <div class="explorer-container">
+        <div class="content-wrap">
+            <nav class="navbar navbar-dark navbar-expand-lg">
+                <div class="container"><a class="navbar-brand" href="/"></a>
+                    <button class="navbar-toggler" type="button" aria-controls="navbarSupportedContent"
+                            aria-expanded="false" aria-label="Toggle navigation" data-toggle="collapse"
+                            data-target="#navbar-menu"><span class="navbar-toggler-icon"></span></button>
+                    <div class="collapse navbar-collapse" id="navbar-menu">
+                        <ul class="navbar-nav">
+                            <li class="nav-item"><a class="nav-link" href="/"
+                                                           rel="external">Pitcoin</a></li>
+                            <li class="nav-item"><a class="nav-link" href="/wallet"
+                                                     rel="external">Wallet</a></li>
+                            <li class="nav-item"><a class="nav-link" href="/mine"
+                                                     rel="external">Mine</a></li>
+                            <li class="nav-item"><a class="nav-link" href="/logout"
+                                                           rel="external">Logout</a></li>
+                            <li class="nav-item nav-toggler">
+                                <div class="nav-bar_moon_icon toggle-theme"></div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+            <div>
+                <div class="jumbotron jumbotron-fluid transaction-page">
+                    <div class="container">
+                        <form action="/search/" method="post" class="search form-inline ml-auto">
+                            {% csrf_token %}
+                            {{ form }}
+                            <div class="search-bar page-search-bar"><input class="form-control search-bar-input"
+                                                                           type="search" name="q"
+                                                                           placeholder="Search for block height or transaction"
+                                                                           autocomplete="off" aria-label="Search">
+                                <button class="search-bar-submit" type="image"></button>
+                            </div>
+                        </form>
+                        <div><h1 class="transaction-header-title">Address</h1>
+                            <div class="block-hash"><span>{{ wallet_address }}</span></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="container">
+                    <div id="{{ info.3.tx_hash }}" class="transaction-box">
+                        <div>Transactions</div>
+                        {% for hash in inputs %}
+                        <div class="header">
+                            <div class="txn"><a href="#" onclick="return false">{{ hash.0.tx_hash }}</a></div>
+                        </div>
+                        {% endfor%}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer class="footer">
+            <div class="container">
+                <div class="footer-logo"></div>
+                <div class="footer_container_content">
+                    <div class="footer_container_content_row">
+                        <div class="footer_container_content_row_social-media_container"><a
+                                class="footer_container_content_row_social-media_link"
+                                href="https://www.facebook.com/vsarapin/" target="_blank"><img
+                                class="footer_container_content_row_social-media_item" alt=""
+                                src="{% static 'f1b_blue.png' %}"></a><a
+                                class="footer_container_content_row_social-media_link"
+                                href="https://github.com/vsarapin" target="_blank"><img
+                                class="footer_container_content_row_social-media_item" alt=""
+                                src="{% static 'github_blue.png' %}"></a></div>
+                        <div class="footer_container_content_copyright">© 2019 Vitalii Sarapin. All rights reserved.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </div>
+</div>
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+</body>
+</html>

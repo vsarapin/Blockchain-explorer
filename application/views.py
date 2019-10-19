@@ -11,23 +11,46 @@ from .send import Send
 from .pending_pool import PendingPool
 from .mine import Mine
 from .index import IndexBlocks
-from .models import Generated, Miner
+from .models import Generated, Miner, Outputs
 from django.db import IntegrityError
 from ecdsa import SigningKey, VerifyingKey, SECP256k1, util
 from binascii import hexlify, unhexlify
 from base58 import b58encode, b58decode, b58decode_check
 from django.db import connection
+from django.contrib.auth import logout as auth_logout, login as auth_login, authenticate
+from django.contrib.auth.forms import UserCreationForm
+from django.shortcuts import render, redirect
 import itertools
 import json
 import hashlib
 import codecs
 import os
 
-
 from .form import Search
 
 def index(request):
     return render(request, "index.html")
+
+def login(request):
+    return render(request, "registration/login.html")
+
+def logout(request):
+    auth_logout(request)
+    return redirect('/')
+
+def register(request):
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            form.save()
+            username = form.cleaned_data.get('username')
+            raw_password = form.cleaned_data.get('password1')
+            user = authenticate(username=username, password=raw_password)
+            auth_login(request, user)
+            return redirect('/')
+    else:
+        form = UserCreationForm()
+    return render(request, "registration/register.html", {'form': form})
 
 def return_blocks(request):
     block_info = IndexBlocks()
@@ -40,6 +63,8 @@ def block_info(request, height):
     return render(request, "block.html", {'info': block_info, 'max': max_len})
 
 def tx_info(request, tx_hash):
+    if not request.user.is_authenticated:
+            return redirect('/')
     block = IndexBlocks()
     tx = block.tx_info(tx_hash)
     return render(request, "tx.html", {'tx': tx, 'hash': tx_hash})
@@ -81,7 +106,8 @@ def send(request):
     send_to = request.GET.get('to')
     send_amount = request.GET.get('amount')
     send_fee = request.GET.get('fee')
-    send = Send(send_from, send_to, send_amount, send_fee)
+    user_id = request.user.id
+    send = Send(send_from, send_to, send_amount, send_fee, user_id)
     income_data_validation = send.check_income_data()
     return HttpResponse(income_data_validation)
 
@@ -93,7 +119,7 @@ def delete(request):
 
 
 def get_user_addresses(request):
-    addresses = Generated.objects.values_list('address', flat=True)
+    addresses = Generated.objects.filter(user_id=request.user.id).values_list('address', flat=True)
     string = ''
     for address in addresses:
         string += address + ','
@@ -125,7 +151,7 @@ def generate_keys(request):
     content = generate.generate_keys()
     splited = content.split(',')
     if len(splited) == 4:
-        keys = Generated(private_key=splited[0], wif=splited[1], public_key=splited[2], address=splited[3])
+        keys = Generated(private_key=splited[0], wif=splited[1], public_key=splited[2], address=splited[3], user_id=request.user.id)
         keys.save()
     return HttpResponse(content)
 
@@ -153,7 +179,7 @@ def import_key(request):
     splited = content.split(',')
     if len(splited) == 4:
         try:
-            keys = Generated(private_key=splited[0], wif=splited[1], public_key=splited[2], address=splited[3])
+            keys = Generated(private_key=splited[0], wif=splited[1], public_key=splited[2], address=splited[3], user_id=request.user.id)
             keys.save()
         except IntegrityError:
             return HttpResponse('WIF already exists!')
@@ -196,8 +222,22 @@ def mine_pendings(request):
 
 
 def mine(request):
+    if not request.user.is_authenticated:
+            return redirect('/')
     return render(request, "mine.html")
 
+def address_info(request, wallet_address):
+    if not request.user.is_authenticated:
+            return redirect('/')
+    tmp_input = []
+    outputs = Outputs.objects.filter(address_to=wallet_address)
+    for input in outputs:
+        tmp_input.append([
+            {'tx_hash': input.tx_hash},
+        ])
+    return render(request, "wallet_address.html", { 'wallet_address': wallet_address, 'inputs': tmp_input })
 
 def wallet(request):
+    if not request.user.is_authenticated:
+            return redirect('/')
     return render(request, "wallet.html")
